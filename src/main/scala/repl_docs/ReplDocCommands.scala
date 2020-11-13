@@ -10,15 +10,19 @@ import scala.collection.mutable.ArrayBuffer
 //TODO methods like head, tail, take
 //TODO add a `methods` command that lists all of the methods for a class
 //TODO work for other classes besides immutable collections
+//TODO add a command to jump to source on Github
+//TODO refactor the new `vi/edit` command
+//TODO add a `doc_help` command or something like that
 
 object ReplDocCommandsMain extends App {
-    import ReplDocCommands.{doc,src,open}
+    import ReplDocCommands.{doc,src,open,edit}
     // println("\n___VECTOR___")
     // doc("Vector")
     // open("LazyList")
     // println("\n___LAZYLIST::withFilter___")
     // doc("LazyList", "withFilter")
     // src("Vector")
+    edit("Vector")
 }
 
 object ReplDocCommands {
@@ -76,6 +80,67 @@ object ReplDocCommands {
         val htmlString = sourceCode.getOrElse(errorMsg)
         println(htmlString)
     }
+
+    /**
+      * Return the source code for a given class name.
+      */
+    def edit(aScalaClassName: String): Unit = {
+        // get the scaladoc url
+        val scaladocUrl = getUrlForClassname(aScalaClassName)
+        // println(s"scaladocUrl: $scaladocUrl")
+
+        // get the html from that page
+        val scaladocHtml = getHtmlFromUrl(scaladocUrl).getOrElse("")
+        // println(s"scaladocHtml: $scaladocHtml")
+
+        // get the source code url from the scaladoc html
+        val sourceCodeUrl = getSourceCodeUrl(scaladocHtml)
+        println(s"sourceCodeUrl: $sourceCodeUrl")
+
+        val sourceCode: Either[String,String] = getHtmlFromUrl(sourceCodeUrl)
+        // println(s"sourceCode: ${sourceCode.getOrElse("").take(100)}")
+
+        //TODO handle the Left case
+        val errorMsg = s"""
+          |Sorry, could not get the source code from this URL:
+          |$sourceCodeUrl""".stripMargin
+        val htmlString = sourceCode.getOrElse(errorMsg)
+
+        // write to a temp file
+        val filename = s"/Users/al/tmp/${aScalaClassName}.txt"
+        import java.io._
+        val pw = new PrintWriter(new File(filename))
+        pw.write(htmlString)
+        pw.close
+
+        // open the temp file with AppleScript and TextEdit
+        val appleScriptCmd = s"""
+            |set p to "$filename" 
+            |set a to POSIX file p
+            |tell application "Finder"
+            |    open a
+            |end tell""".stripMargin
+        val runtime = Runtime.getRuntime
+        val code = Array("osascript", "-e", appleScriptCmd)
+        val process = runtime.exec(code)
+
+            //         |tell application "TextEdit"
+            // |    activate
+            // |    open targetFilepath
+            // |end tell""".stripMargin
+
+
+        // import sys.process._
+        // val cmd = Seq(
+        //     "/bin/sh",
+        //     "-c",
+        //     s"""echo "Hello, world" > foo.scala && vi foo.scala"""
+        // ).!!
+        //     // s"echo $htmlString | vi -"
+        //     // s"vim <(echo $htmlString)"
+
+    }
+
 
     def open(aScalaClassName: String): Unit = {
         val scaladocUrl = getUrlForClassname(aScalaClassName)
