@@ -39,7 +39,7 @@ import com.alvinalexander.repl_docs.ReplDocCommands.{doc,src,open}
 alias repl="scala -cp ScalaReplDocCommands-assembly-0.1.jar -i _/Users/al/tmp/repl-commands_"
 ````
 
-- The start the REPL with that alias:
+- Then start the REPL with that alias:
 
 ````
 $ repl
