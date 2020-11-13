@@ -6,10 +6,10 @@ and Scala source code in the REPL would be good:
 
 | Command                   | Description  |
 | ------------------------- | ------------- |
-| `doc("List")`             | show the List class Scaladoc |
-| `doc("List", "foldLeft")` | show methods that match 'foldLeft' in the List Scaladoc |
-| `src("Vector")`           | show the source code for the Vector class |
-| `open("LazyList")`        | open the LazyList class Scaladoc in the default browser |
+| `doc("List")`             | show the `List` class Scaladoc |
+| `doc("List", "foldLeft")` | show methods that match `foldLeft` in the `List` Scaladoc |
+| `src("Vector")`           | show the source code for the `Vector` class |
+| `open("LazyList")`        | open the `LazyList` class Scaladoc in the default browser |
 
 Note that the `open` command currently only works on MacOS systems, because it requires a little bit of AppleScript code to open the default browser on a Mac system.
 
