@@ -57,3 +57,14 @@ As mentioned, I created this as a POC/MVP candidate to see if this is a good ide
 Everything after that is screen-scraping with Jsoup. A much better (i.e., real) implementation would probably read from the source code JAR files. But, this was much easier for me to do quickly.
 
 
+## Jsoup
+
+Some useful Jsoup URLs:
+
+- [DOM navigation](https://jsoup.org/cookbook/extracting-data/dom-navigation)
+- [Cookbook](https://jsoup.org/cookbook/)
+- [Selector-style syntax to find elements](https://jsoup.org/cookbook/extracting-data/selector-syntax)
+- [Extracting links](https://jsoup.org/cookbook/extracting-data/example-list-links)
+- [`Elements` Javadoc](https://jsoup.org/apidocs/org/jsoup/select/Elements.html)
+- [`Element` Javadoc](https://jsoup.org/apidocs/org/jsoup/nodes/Element.html)
+
