@@ -1,6 +1,6 @@
 # ScalaReplDocCommands
 
-This is a little “proof of concept” or MVP candidate
+This is a little “proof of concept” (POC) or MVP candidate
 to see if having commands like these to view Scaladoc
 and Scala source code in the REPL would be good:
 
@@ -48,16 +48,12 @@ $ repl
 Inside the REPL, use the `doc`, `src`, and `open` commands shown above.
 
 
+## Discussion
 
+As mentioned, I created this as a POC/MVP candidate to see if this is a good idea. The easiest way for me to do this was to get the docs off the internet, from URLs like this one:
 
+- _https://www.scala-lang.org/api/current/scala/collection/immutable/List.html_
 
-
-
-
-
-
-
-
-
+Everything after that is screen-scraping with Jsoup. A much better (i.e., real) implementation would probably read from the source code JAR files. But, this was much easier for me to do quickly.
 
 
