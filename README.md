@@ -4,10 +4,12 @@ This is a little “proof of concept” or MVP candidate
 to see if having commands like these to view Scaladoc
 and Scala source code in the REPL would be good:
 
-- `doc("List")                show the List class Scaladoc`
-- `doc("List", "foldLeft")    show methods that match 'foldLeft' in the List Scaladoc`
-- `src("Vector")              show the source code for the Vector class"`
-- `open("LazyList")           open the LazyList class Scaladoc in the default browser`
+| Command                   | Description  |
+| ------------------------- | ------------- |
+| `doc("List")`             | show the List class Scaladoc |
+| `doc("List", "foldLeft")` | show methods that match 'foldLeft' in the List Scaladoc |
+| `src("Vector")`           | show the source code for the Vector class |
+| `open("LazyList")`        | open the LazyList class Scaladoc in the default browser |
 
 Note that the `open` command currently only works on MacOS systems, because it requires a little bit of AppleScript code to open the default browser on a Mac system.
 
@@ -43,12 +45,8 @@ alias repl="scala -cp ScalaReplDocCommands-assembly-0.1.jar -i _/Users/al/tmp/re
 $ repl
 ````
 
-Inside the REPL, use the commands shown above:
+Inside the REPL, use the `doc`, `src`, and `open` commands shown above.
 
-- `doc("List")                show the List class Scaladoc`
-- `doc("List", "foldLeft")    show methods that match 'foldLeft' in the List Scaladoc`
-- `src("Vector")              show the source code for the Vector class"`
-- `open("LazyList")           open the LazyList class Scaladoc in the default browser`
 
 
 
