@@ -7,13 +7,6 @@ import NetworkUtils.getContentFromUrl
 import AppleScriptUtils.runApplescriptCommand
 import FileUtils.writeToFile
 
-//TODO need something like a `more` and/or `limit` command for long output
-//TODO methods like head, tail, take
-//TODO add a `methods` command that lists all of the methods for a class
-//TODO work for other classes besides immutable collections
-//TODO add a command to jump to source on Github
-//TODO add a `doc_help` command or something like that
-
 object ReplDocCommandsMain extends App {
     import ReplDocCommands.{doc,src,open,edit}
     // println("\n___VECTOR___")
@@ -33,6 +26,19 @@ object ReplDocCommands {
     val githubSourceUrlRaw = "https://raw.githubusercontent.com/scala/scala"
 
     /**
+      * print some help text
+      */
+    def help: Unit =
+        println(s"""
+        |Available Documentation Commands
+        |--------------------------------
+        |doc("List")              show the List class Scaladoc
+        |doc("List", "foldLeft")  show methods that match foldLeft in the List Scaladoc
+        |src("Vector")            show the source code for the Vector class
+        |open("LazyList")         open the LazyList class Scaladoc in the default browser
+        """.stripMargin)
+
+    /**
       * Given a class name return all of the text from the 
       * correct Scaladoc page.
       */
@@ -48,7 +54,7 @@ object ReplDocCommands {
         //plainText.split("\n").map(line => s"\n$line").toSeq
         //plainText.split("\n").toSeq
         //Seq(plainText)
-        println(plainText)
+        println(onlyGoodChars(plainText))
     }
 
     /**
@@ -61,7 +67,7 @@ object ReplDocCommands {
         //TODO handle the Left case
         val htmlString = body.getOrElse("")
         val methodsSeq = searchClassForStringOccurrences(htmlString, stringToSearchFor)
-        println(methodsSeq.mkString)
+        println(onlyGoodChars(methodsSeq.mkString))
     }
 
     /**
@@ -83,7 +89,7 @@ object ReplDocCommands {
       * @param aScalaClassName A simple name like "List" or "Vector".
       */
     def open(aScalaClassName: String): Unit = {
-        val scaladocUrl = getUrlForClassname(aScalaClassName)
+        val scaladocUrl = getScaladocUrlForClassname(aScalaClassName)
         println(s"OPENING $scaladocUrl ...\n")
         runApplescriptCommand(s"""open location "$scaladocUrl" """)
     }
@@ -122,7 +128,7 @@ object ReplDocCommands {
       * code from that Github page.
       */
     private def getSourceCodeFromGithub(aScalaClassName: String): Either[String,String] = {
-        val scaladocUrl = getUrlForClassname(aScalaClassName)
+        val scaladocUrl = getScaladocUrlForClassname(aScalaClassName)
         val scaladocHtml = getContentFromUrl(scaladocUrl).getOrElse("")
         val githubSourceCodeUrl = getGithubSourceCodeUrl(scaladocHtml)
         // TODO this helps for debugging atm
@@ -156,7 +162,7 @@ object ReplDocCommands {
       * @return Returns an Either, with the HTML body in the Right.
       */
     private def retrieveScaladocHtml(aScalaClassName: String): Either[String,String] = {
-        val url = getUrlForClassname(aScalaClassName)
+        val url = getScaladocUrlForClassname(aScalaClassName)
         getContentFromUrl(url)
     }
 
@@ -193,8 +199,17 @@ object ReplDocCommands {
       * @return A canonical URL for the correct Scaladoc page.
       */
     // 
-    private def getUrlForClassname(aScalaClassName: String): String = {
+    private def getScaladocUrlForClassname(aScalaClassName: String): String = {
         s"${scaladocPrefixUrl}/${aScalaClassName}.html"
+    }
+
+    /**
+      * TODO the string i receive has some non-printable characters in it,
+      * and i want to get rid of those.
+      */
+    private def onlyGoodChars(s: String): String = {
+        val goodChars = (' ' to '~').toList ++ List('\n', '\r', '\f')
+        s.filter(c => goodChars.contains(c)).trim
     }
 
 }
