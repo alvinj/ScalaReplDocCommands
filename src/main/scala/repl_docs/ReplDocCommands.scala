@@ -6,16 +6,18 @@ import scala.collection.mutable.ArrayBuffer
 import NetworkUtils.getContentFromUrl
 import AppleScriptUtils.runApplescriptCommand
 import FileUtils.writeToFile
+import scala.util.{Try,Success,Failure}
 
 object ReplDocCommandsMain extends App {
-    import ReplDocCommands.{doc,src,open,edit}
+    import ReplDocCommands._
     // println("\n___VECTOR___")
     // doc("Vector")
     // open("LazyList")
     // println("\n___LAZYLIST::withFilter___")
     // doc("LazyList", "withFilter")
     // src("Vector")
-    edit("Vector")
+    edit("Array")
+    // help
 }
 
 object ReplDocCommands {
@@ -36,6 +38,7 @@ object ReplDocCommands {
         |doc("List", "foldLeft")  show methods that match foldLeft in the List Scaladoc
         |src("Vector")            show the source code for the Vector class
         |open("LazyList")         open the LazyList class Scaladoc in the default browser
+        |edit("Vector")           open the Vector class in your default ".txt" editor
         """.stripMargin)
 
     /**
@@ -67,7 +70,15 @@ object ReplDocCommands {
         //TODO handle the Left case
         val htmlString = body.getOrElse("")
         val methodsSeq = searchClassForStringOccurrences(htmlString, stringToSearchFor)
+        printClassSearchMatches(methodsSeq)
+    }
+
+    private def printClassSearchMatches(methodsSeq: Seq[String]): Unit = {
+        println("")
+        println("Matches Found")
+        println("-------------")
         println(onlyGoodChars(methodsSeq.mkString))
+        println("")
     }
 
     /**
@@ -89,9 +100,13 @@ object ReplDocCommands {
       * @param aScalaClassName A simple name like "List" or "Vector".
       */
     def open(aScalaClassName: String): Unit = {
-        val scaladocUrl = getScaladocUrlForClassname(aScalaClassName)
-        println(s"OPENING $scaladocUrl ...\n")
-        runApplescriptCommand(s"""open location "$scaladocUrl" """)
+        val scaladocUrlTry = getScaladocUrlForClassname(aScalaClassName)
+        scaladocUrlTry match {
+            case Success(scaladocUrl) => 
+                println(s"OPENING $scaladocUrl ...\n")
+                runApplescriptCommand(s"""open location "$scaladocUrl" """)
+            case Failure(e) => println(e.getMessage)
+        }
     }
 
     /**
@@ -100,26 +115,19 @@ object ReplDocCommands {
      * @param aScalaClassName A simple name like "List" or "Vector".
      */
     def edit(aScalaClassName: String): Unit = {
-        val sourceCode: Either[String,String] = 
+        val sourceCodeEither: Either[String,String] = 
             getSourceCodeFromGithub(aScalaClassName: String)
 
-        //TODO handle the Left case
-        val errorMsg = "Sorry, could not get the source code."
-        val htmlString = sourceCode.getOrElse(errorMsg)
-
-        // write to a temp file
-        val filename = s"${tempDir}/${aScalaClassName}.txt"
-        writeToFile(filename, htmlString)
-
-        // open the temp file with AppleScript and TextEdit.
-        // note: vi did not like it when i tried to open it inside the repl.
-        val appleScriptCmd = s"""
-            |set p to "$filename" 
-            |set a to POSIX file p
-            |tell application "Finder"
-            |    open a
-            |end tell""".stripMargin
-        runApplescriptCommand(appleScriptCmd)
+        sourceCodeEither match {
+            case Left(errorMsg) =>
+                // val errorMsg = "Sorry, could not get the source code."
+                println(errorMsg)
+            case Right(sourceCode) =>
+                // write to a temp file
+                val filename = s"${tempDir}/${aScalaClassName}.txt"
+                writeToFile(filename, sourceCode)
+                AppleScriptUtils.openTxtFileWithDefaultEditor(filename)
+        }
     }
 
     /**
@@ -128,12 +136,17 @@ object ReplDocCommands {
       * code from that Github page.
       */
     private def getSourceCodeFromGithub(aScalaClassName: String): Either[String,String] = {
-        val scaladocUrl = getScaladocUrlForClassname(aScalaClassName)
-        val scaladocHtml = getContentFromUrl(scaladocUrl).getOrElse("")
-        val githubSourceCodeUrl = getGithubSourceCodeUrl(scaladocHtml)
-        // TODO this helps for debugging atm
-        println(s"sourceCodeUrl: $githubSourceCodeUrl")
-        getContentFromUrl(githubSourceCodeUrl)
+        val scaladocUrlTry = getScaladocUrlForClassname(aScalaClassName)
+        scaladocUrlTry match {
+            case Success(scaladocUrl) =>
+                // TODO use exception-handling here
+                val scaladocHtml = getContentFromUrl(scaladocUrl).getOrElse("")
+                val githubSourceCodeUrl = getGithubSourceCodeUrl(scaladocHtml)
+                // TODO this helps for debugging atm
+                println(s"sourceCodeUrl: $githubSourceCodeUrl")
+                getContentFromUrl(githubSourceCodeUrl)
+            case Failure(e) => Left(e.getMessage)
+        }
 
     }
 
@@ -162,8 +175,11 @@ object ReplDocCommands {
       * @return Returns an Either, with the HTML body in the Right.
       */
     private def retrieveScaladocHtml(aScalaClassName: String): Either[String,String] = {
-        val url = getScaladocUrlForClassname(aScalaClassName)
-        getContentFromUrl(url)
+        val urlTry = getScaladocUrlForClassname(aScalaClassName)
+        urlTry match {
+            case Success(url) => getContentFromUrl(url)
+            case Failure(e)   => Left(e.getMessage)
+        }        
     }
 
     /**
@@ -199,8 +215,13 @@ object ReplDocCommands {
       * @return A canonical URL for the correct Scaladoc page.
       */
     // 
-    private def getScaladocUrlForClassname(aScalaClassName: String): String = {
-        s"${scaladocPrefixUrl}/${aScalaClassName}.html"
+    private def getScaladocUrlForClassname(className: String): Try[String] = {
+        //s"${scaladocPrefixUrl}/${aScalaClassName}.html"
+        val canonClassNameTry = classNameToCanonClassName(className)
+        canonClassNameTry match {
+            case Success(canonClassName) => Success(canonClassNameToUrl(canonClassName))
+            case Failure(e) => Failure(e)
+        }
     }
 
     /**
@@ -210,6 +231,31 @@ object ReplDocCommands {
     private def onlyGoodChars(s: String): String = {
         val goodChars = (' ' to '~').toList ++ List('\n', '\r', '\f')
         s.filter(c => goodChars.contains(c)).trim
+    }
+
+    /**
+      * given a class name like "List", return "scala.collection.immutable.List".
+      * given a class name like "Map", prompt the user for what they want
+      * from a list of choices, and return that.
+      */
+    private def classNameToCanonClassName(className: String): Try[String] = {
+        // lookup the className in the listOfClasses
+        // if result.size == 0, return None
+        // if result.size == 1, return Some(List)
+        // if result.size > 1, prompt the user for what they want
+        val listOfCanonNameMatches = Data.scalaClasses.filter(_.endsWith(s".${className}"))
+        listOfCanonNameMatches.size match {
+            case 0 => Failure(new Exception(s"Could not find the class '${className}'"))
+            case 1 => Success(listOfCanonNameMatches.head)
+            case _ => //TODO prompt the user for what they want
+                      Failure(new Exception("Multiple matches found, can’t deal with that yet."))
+        }
+    }
+
+    private def canonClassNameToUrl(canonClassName: String): String = {
+        val uri = canonClassName.replaceAll("\\.", "/")
+        val url = s"https://www.scala-lang.org/api/current/${uri}.html"
+        url
     }
 
 }

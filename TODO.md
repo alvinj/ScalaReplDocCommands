@@ -1,12 +1,19 @@
 To-Do List
 ==========
 
-- work for other classes besides immutable collections
+- use the list of classes to support *all* Scala classes,
+  not just immutable collections
+    - this is started. need to handle the case of multiple matches,
+        such as when the user searches for "Map".
+- the `doc` result should have methods like head, tail, take
+    - this desire makes me think the code should return a Seq 
+      instead of a String
+
+Longer term
+-----------
 - need something like a `more` and/or `limit` command for long output
-- methods like head, tail, take (return a Seq instead of a String)
 - add a `methods` command that lists all of the methods for a class
 - add a command to jump to source on Github
-
 
 Done
 ----

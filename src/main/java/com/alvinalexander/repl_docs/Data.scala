@@ -1,5 +1,25 @@
 package com.alvinalexander.repl_docs
 
+/**
+ * scala.collection.immutable.List =>
+ * https://www.scala-lang.org/api/current/scala/collection/immutable/List.html
+ * 
+ * [1] scalaClasses.filter(_.endsWith(".List"))                                                                                             
+ * val res0: List[String] = List(scala.collection.immutable.List)
+ * 
+ * [2] scalaClasses.filter(_.endsWith(".Map"))                                                                                             
+ * val res1: List[String] = List(
+ *     scala.collection.Map, 
+ *     scala.collection.concurrent.Map, 
+ *     scala.collection.immutable.Map, 
+ *     scala.collection.mutable.Map
+ * )
+ * 
+ * val canonClass = "scala.collection.immutable.List"
+ * val uri = canonClass.replaceAll("\\.", "/")  //"scala/collection/immutable/List"
+ * val url = s"https://www.scala-lang.org/api/current/${uri}.html"
+ * 
+ */
 object Data {
     val scalaClasses = List("scala.AnyVal",
         "scala.AnyValCompanion",
