@@ -2,6 +2,7 @@ package com.alvinalexander.repl_docs
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
+import org.jsoup.select.Elements
 import scala.collection.mutable.ArrayBuffer
 import NetworkUtils.getContentFromUrl
 import AppleScriptUtils.runApplescriptCommand
@@ -14,9 +15,9 @@ object ReplDocCommandsMain extends App {
     // doc("Vector")
     // open("LazyList")
     // println("\n___LAZYLIST::withFilter___")
-    // doc("LazyList", "withFilter")
+    doc("LazyList", "withFilter")
     // src("Vector")
-    edit("Array")
+    // editor("Array")
     // help
 }
 
@@ -37,13 +38,13 @@ object ReplDocCommands {
         |doc("List", "foldLeft")  show methods that match foldLeft in the List Scaladoc
         |src("Vector")            show the source code for the Vector class
         |open("LazyList")         open the LazyList class Scaladoc in the default browser
-        |edit("Vector")           open the Vector class in your default ".txt" editor
+        |editor("Vector")           open the Vector class in your default ".txt" editor
         """.stripMargin)
 
     /**
-      * Given a class name return all of the text from the 
-      * correct Scaladoc page.
-      */
+     * Given a class name return all of the text from the 
+     * correct Scaladoc page.
+     */
     def doc(aScalaClassName: String): Unit = {
         println("getting docs ...")
         val body: Either[String,String] = retrieveScaladocHtml(aScalaClassName)
@@ -65,12 +66,40 @@ object ReplDocCommands {
       */
     def doc(aScalaClassName: String, stringToSearchFor: String): Unit = {
         println("getting docs ...")
-        val body = retrieveScaladocHtml(aScalaClassName)
+        val body: Either[String,String] = retrieveScaladocHtml(aScalaClassName)
         //TODO handle the Left case
         val htmlString = body.getOrElse("")
-        val methodsSeq = searchClassForStringOccurrences(htmlString, stringToSearchFor)
-        printClassSearchMatches(methodsSeq)
+        val doc: Document = Jsoup.parse(htmlString)
+        val listOfMethodsInPlainText = convertHtmlToListOfPlainTextMethods(doc)
+        val matchingMethods = listOfMethodsInPlainText.filter(_.contains(stringToSearchFor))
+        matchingMethods.foreach(s => println(s"\n${s.trim}"))
+        println("\n")
     }
+
+    /**
+      * For the `Document` of the current Scaladoc page, go through each method on that
+      * page, convert the HTML to decent-looking plain text, and then return a list
+      * of strings, where each string is the documentation for a method. So, for a
+      * Scaladoc collections page like `LazyList`, this method returns a list of
+      * 276 elements, where each element is the documentation for a method.
+      */
+    private def convertHtmlToListOfPlainTextMethods(doc: Document): Seq[String] = {
+        val listOfMethods = ArrayBuffer[String]()
+        val methods: Elements = doc.select("li.indented0")   //Elements, 276 of them
+        val plainTextLinesForCurrentMethod = ArrayBuffer[String]()
+        methods.forEach{currentMethod: Element =>
+            // an element is the beginning of the Scaladoc for a method.
+            // create a multiline string that represents each element.
+            currentMethod.children.forEach{child => 
+                plainTextLinesForCurrentMethod += s"${onlyGoodChars(child.text)}\n"
+            }
+            val currentMethodAsMultilineString = plainTextLinesForCurrentMethod.mkString
+            plainTextLinesForCurrentMethod.clear()
+            listOfMethods += currentMethodAsMultilineString
+        }
+        listOfMethods.toSeq
+    }
+
 
     private def printClassSearchMatches(methodsSeq: Seq[String]): Unit = {
         println("")
@@ -113,7 +142,7 @@ object ReplDocCommands {
      * in your default editor.
      * @param aScalaClassName A simple name like "List" or "Vector".
      */
-    def edit(aScalaClassName: String): Unit = {
+    def editor(aScalaClassName: String): Unit = {
         val sourceCodeEither: Either[String,String] = 
             getSourceCodeFromGithub(aScalaClassName: String)
 

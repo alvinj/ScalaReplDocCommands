@@ -10,7 +10,7 @@ and Scala source code in the REPL would be good:
 | `doc("List", "foldLeft")` | show methods that match `foldLeft` in the `List` Scaladoc |
 | `src("Vector")`           | show the source code for the `Vector` class |
 | `open("LazyList")`        | open the `LazyList` class Scaladoc in the default browser |
-| `edit("Vector")`          | open the `Vector` class in your default ".txt" editor |
+| `editor("Vector")`        | open the `Vector` class in your default ".txt" editor |
 
 Note that the `open` command currently only works on MacOS systems, because it requires a little bit of AppleScript code to open the default browser on a Mac system.
 
@@ -53,7 +53,7 @@ alias repl="scala -cp ScalaReplDocCommands-assembly-0.1.jar -i _/Users/al/tmp/re
 $ repl
 ````
 
-Inside the REPL, use the `doc`, `src`, `open`, and `edit` commands shown above.
+Inside the REPL, use the `doc`, `src`, `open`, and `editor` commands shown above.
 
 
 ## Discussion

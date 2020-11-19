@@ -1,7 +1,7 @@
 To-Do List
 ==========
 
-- change the `edit` command to `editor`
+- the `doc(className)` output is pretty ugly right now
 - use the list of classes to support *all* Scala classes,
   not just immutable collections
     - this is started. need to handle the case of multiple matches,
@@ -19,4 +19,6 @@ Longer term
 Done
 ----
 - add a `help` command or something like that
+- change the `edit` command to `editor`
+- improve the `doc(className, searchFor)` output
 
