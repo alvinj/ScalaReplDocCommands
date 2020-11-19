@@ -23,7 +23,6 @@ object ReplDocCommandsMain extends App {
 object ReplDocCommands {
 
     val tempDir = "/Users/al/tmp"
-    val scaladocPrefixUrl = "https://www.scala-lang.org/api/current/scala/collection/immutable"
     val githubSourceUrl = "https://github.com/scala/scala/tree"
     val githubSourceUrlRaw = "https://raw.githubusercontent.com/scala/scala"
 
@@ -150,6 +149,7 @@ object ReplDocCommands {
 
     }
 
+    // TODO make this private again
     /**
       * Search for all occurrences of the given string in the given HTML.
       * The code searches for a CSS class that’s in the LI tag of Scaladoc
@@ -162,7 +162,7 @@ object ReplDocCommands {
       *                          a method within a class.
       * @return
       */
-    private def searchClassForStringOccurrences(htmlString: String, stringToSearchFor: String): Seq[String] = {
+    def searchClassForStringOccurrences(htmlString: String, stringToSearchFor: String): Seq[String] = {
         val doc: Document = Jsoup.parse(htmlString)
         val lines = ArrayBuffer[String]()
         // the css class to search for
@@ -171,10 +171,11 @@ object ReplDocCommands {
         matchingLines.toSeq
     }
 
+    // TODO make this `private` again
     /**
       * @return Returns an Either, with the HTML body in the Right.
       */
-    private def retrieveScaladocHtml(aScalaClassName: String): Either[String,String] = {
+    def retrieveScaladocHtml(aScalaClassName: String): Either[String,String] = {
         val urlTry = getScaladocUrlForClassname(aScalaClassName)
         urlTry match {
             case Success(url) => getContentFromUrl(url)
@@ -224,11 +225,12 @@ object ReplDocCommands {
         }
     }
 
+    // TODO make private again
     /**
-      * TODO the string i receive has some non-printable characters in it,
+      * the string i receive has some non-printable characters in it,
       * and i want to get rid of those.
       */
-    private def onlyGoodChars(s: String): String = {
+    def onlyGoodChars(s: String): String = {
         val goodChars = (' ' to '~').toList ++ List('\n', '\r', '\f')
         s.filter(c => goodChars.contains(c)).trim
     }

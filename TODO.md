@@ -1,6 +1,7 @@
 To-Do List
 ==========
 
+- change the `edit` command to `editor`
 - use the list of classes to support *all* Scala classes,
   not just immutable collections
     - this is started. need to handle the case of multiple matches,
