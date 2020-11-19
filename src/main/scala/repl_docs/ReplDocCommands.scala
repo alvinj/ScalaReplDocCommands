@@ -34,10 +34,11 @@ object ReplDocCommands {
         println(s"""
         |Available Documentation Commands
         |--------------------------------
-        |doc("List")              show the List class Scaladoc
-        |doc("List", "foldLeft")  show methods that match foldLeft in the List Scaladoc
-        |src("Vector")            show the source code for the Vector class
-        |open("LazyList")         open the LazyList class Scaladoc in the default browser
+        |doc("List")                show the List class Scaladoc
+        |doc("List", "withFilter")  show methods that match foldLeft in the List Scaladoc
+        |                           (grep for 'withFilter' in the methods of the 'List' Scaladoc)
+        |src("Vector")              show the source code for the Vector class
+        |open("LazyList")           open the LazyList class Scaladoc in the default browser
         |editor("Vector")           open the Vector class in your default ".txt" editor
         """.stripMargin)
 

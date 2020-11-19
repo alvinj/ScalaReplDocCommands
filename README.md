@@ -4,13 +4,13 @@ This is a little “proof of concept” (POC) or MVP candidate
 to see if having commands like these to view Scaladoc
 and Scala source code in the REPL would be good:
 
-| Command                   | Description  |
-| ------------------------- | ------------- |
-| `doc("List")`             | show the `List` class Scaladoc |
-| `doc("List", "foldLeft")` | show methods that match `foldLeft` in the `List` Scaladoc |
-| `src("Vector")`           | show the source code for the `Vector` class |
-| `open("LazyList")`        | open the `LazyList` class Scaladoc in the default browser |
-| `editor("Vector")`        | open the `Vector` class in your default ".txt" editor |
+| Command                     | Description   |
+| --------------------------- | ------------- |
+| `doc("List")`               | show the `List` class Scaladoc |
+| `doc("List", "withFilter")` | grep for `withFilter` in the methods of the `List` Scaladoc |
+| `src("Vector")`             | show the source code for the `Vector` class |
+| `open("LazyList")`          | open the `LazyList` class Scaladoc in the default browser |
+| `editor("Vector")`          | open the `Vector` class in your default ".txt" editor |
 
 Note that the `open` command currently only works on MacOS systems, because it requires a little bit of AppleScript code to open the default browser on a Mac system.
 
