@@ -9,7 +9,7 @@ and Scala source code in the REPL would be good:
 | `doc("List")`               | show the `List` class Scaladoc |
 | `doc("List", "withFilter")` | grep for `withFilter` in the methods of the `List` Scaladoc |
 | `src("Vector")`             | show the source code for the `Vector` class |
-| `open("LazyList")`          | open the `LazyList` class Scaladoc in the default browser |
+| `browser("LazyList")`       | open the `LazyList` class Scaladoc in the default browser |
 | `editor("Vector")`          | open the `Vector` class in your default ".txt" editor |
 
 Note that the `open` command currently only works on MacOS systems, because it requires a little bit of AppleScript code to open the default browser on a Mac system.
@@ -33,18 +33,18 @@ The following commands should work on Mac and Unix/Linux systems.
 Once you create a JAR file with `sbt assembly`, follow these steps:
 
 - Create a _/Users/al/tmp_ directory (change this to match a directory on your system)
-- Copy the JAR file to that directory (the JAR is currently named _ScalaReplDocCommands-assembly-0.1.jar_)
+- Copy the JAR file to that directory (the JAR is currently named _ScalaReplDocCommands-assembly-0.2.jar_)
 - Create a file named _repl-commands_ in that directory
 - Put this content in that file:
 
 ```scala
-import com.alvinalexander.repl_docs.ReplDocCommands.{doc,src,open}
+import com.alvinalexander.repl_docs.ReplDocCommands._
 ```
 
 - Create an alias to start the REPL:
 
 ````
-alias repl="scala -cp ScalaReplDocCommands-assembly-0.1.jar -i _/Users/al/tmp/repl-commands_"
+alias repl="scala -cp ScalaReplDocCommands-assembly-0.2.jar -i _/Users/al/tmp/repl-commands_"
 ````
 
 - Then start the REPL with that alias:
@@ -53,7 +53,7 @@ alias repl="scala -cp ScalaReplDocCommands-assembly-0.1.jar -i _/Users/al/tmp/re
 $ repl
 ````
 
-Inside the REPL, use the `doc`, `src`, `open`, and `editor` commands shown above.
+Inside the REPL, use the `help`, `doc`, `src`, `open`, and `editor` commands shown above.
 
 
 ## Discussion

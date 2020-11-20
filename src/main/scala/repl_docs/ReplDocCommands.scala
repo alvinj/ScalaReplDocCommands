@@ -5,7 +5,7 @@ import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
 import scala.collection.mutable.ArrayBuffer
 import NetworkUtils.getContentFromUrl
-import AppleScriptUtils.runApplescriptCommand
+import AppleScriptUtils._
 import FileUtils.writeToFile
 import scala.util.{Try,Success,Failure}
 
@@ -13,9 +13,9 @@ object ReplDocCommandsMain extends App {
     import ReplDocCommands._
     // println("\n___VECTOR___")
     // doc("Vector")
-    // open("LazyList")
+    browser("LazyList")
     // println("\n___LAZYLIST::withFilter___")
-    doc("LazyList", "withFilter")
+    // doc("LazyList", "withFilter")
     // src("Vector")
     // editor("Array")
     // help
@@ -35,10 +35,9 @@ object ReplDocCommands {
         |Available Documentation Commands
         |--------------------------------
         |doc("List")                show the List class Scaladoc
-        |doc("List", "withFilter")  show methods that match foldLeft in the List Scaladoc
-        |                           (grep for 'withFilter' in the methods of the 'List' Scaladoc)
-        |src("Vector")              show the source code for the Vector class
-        |open("LazyList")           open the LazyList class Scaladoc in the default browser
+        |doc("List", "withFilter")  grep for 'withFilter' in the methods of the List Scaladoc
+        |src("Vector")              show the Github source code for the Vector class
+        |browser("LazyList")        open the LazyList class Scaladoc in the default browser
         |editor("Vector")           open the Vector class in your default ".txt" editor
         """.stripMargin)
 
@@ -128,7 +127,7 @@ object ReplDocCommands {
       * in your default browser.
       * @param aScalaClassName A simple name like "List" or "Vector".
       */
-    def open(aScalaClassName: String): Unit = {
+    def browser(aScalaClassName: String): Unit = {
         val scaladocUrlTry = getScaladocUrlForClassname(aScalaClassName)
         scaladocUrlTry match {
             case Success(scaladocUrl) => 
